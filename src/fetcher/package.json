@@ -1,0 +1,15 @@
+{
+  "name": "fetcher",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "test": "test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "description": "",
+  "dependencies": {
+    "dotenv": "^17.2.1"
+  }
+}
