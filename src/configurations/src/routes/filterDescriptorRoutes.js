@@ -1,38 +1,42 @@
 import express from 'express';
 import filterdescriptorController from '../controllers/filterDescriptorController.js';
+import {
+    validateRequestBodyMiddleware,
+    validateUUIDParamMiddleware
+} from '../middleware/validateRequestBodyMiddleware.js';
+
 const router = express.Router();
 
 router.get(
     '/filters',
-    //   validateRequestBodyMiddleware(),
     //   validateFilterDescriptorMiddleware(),
     filterdescriptorController.getFiltersDescriptors
 );
 
 router.get(
     '/filters/:id',
-    //   validateRequestBodyMiddleware(),
-    //   validateFilterDescriptorMiddleware(),
+    validateRequestBodyMiddleware(),
+    // validateUUIDParamMiddleware(),
     filterdescriptorController.getFilterDescriptorById
 );
 
 router.post(
     '/filters',
-    //   validateRequestBodyMiddleware(),
+    validateRequestBodyMiddleware(),
     //   validateFilterDescriptorMiddleware(),
     filterdescriptorController.createFilterDescriptor
 );
 
 router.put('/filters/:id',
-    //   validateRequestBodyMiddleware(),
+    validateRequestBodyMiddleware(),
+    // validateUUIDParamMiddleware(),
     //   validateFilterDescriptorMiddleware(),
     filterdescriptorController.updateFilterDescriptor
 );
 
 router.delete('/filters/:id',
-    //   validateUUIDParamMiddleware(),
-    //   validateRequestBodyMiddleware(),
-    //   validateFilterDescriptorMiddleware(),
+    validateRequestBodyMiddleware(),
+    // validateUUIDParamMiddleware(),
     filterdescriptorController.deleteFilterDescriptor
 );
 
