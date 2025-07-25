@@ -16,7 +16,30 @@ export const getFiltersDescriptors = async (req, res) => {
     }
 }
 
-export const getFilterDescriptorById = async (req, res) => {}
+export const getFilterDescriptorById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const filter = await filterDescriptorService.getFilterById(id);
+
+        if (!filter) {
+            return res.status(404).json({
+                success: false,
+                error: 'Filter descriptor not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            data: filter
+        });
+    } catch (error) {
+        console.error('Error retrieving filter descriptor:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+}
 
 export const createFilterDescriptor = async (req, res) => {
   try {
@@ -36,9 +59,56 @@ export const createFilterDescriptor = async (req, res) => {
   }
 };
 
-export const updateFilterDescriptor = async (req, res) => {}
+export const updateFilterDescriptor = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updatedFilter = await filterDescriptorService.updateFilterDescriptor(id, req.body);
 
-export const deleteFilterDescriptor = async (req, res) => {}
+        if (!updatedFilter) {
+            return res.status(404).json({
+                success: false,
+                error: 'Filter descriptor not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            data: updatedFilter,
+            message: 'Filter descriptor updated successfully'
+        });
+    } catch (error) {
+        console.error('Error updating filter descriptor:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+}
+
+export const deleteFilterDescriptor = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const deleted = await filterDescriptorService.deleteFilterDescriptor(id);
+
+        if (!deleted) {
+            return res.status(404).json({
+                success: false,
+                error: 'Filter descriptor not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: 'Filter descriptor deleted successfully'
+        });
+    } catch (error) {
+        console.error('Error deleting filter descriptor:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+}
 
 export default {
     getFiltersDescriptors, 
