@@ -28,7 +28,65 @@ export const createFilterDescriptor = async (data) => {
     return newFilterDescriptor;
 };
 
+export const getFilterById = async (id) => {
+    try {
+        const filter = filterDescriptors.get(parseInt(id));
+        return filter || null;
+    } catch (error) {
+        console.error('Error fetching filter descriptor by ID:', error);
+        throw new Error('Failed to fetch filter descriptor');
+    }
+};
+
+export const updateFilterDescriptor = async (id, data) => {
+    try {
+        const filterId = parseInt(id);
+        const existingFilter = filterDescriptors.get(filterId);
+        
+        if (!existingFilter) {
+            return null;
+        }
+
+        const updatedFilter = {
+            ...existingFilter,
+            name: data.name || existingFilter.name,
+            field: data.field || existingFilter.field,
+            operator: data.operator || existingFilter.operator,
+            value: data.value !== undefined ? data.value : existingFilter.value,
+            updatedAt: new Date().toISOString()
+        };
+
+        filterDescriptors.set(filterId, updatedFilter);
+        //   await filterDescriptorModel.update(filterId, updatedFilter);
+        return updatedFilter;
+    } catch (error) {
+        console.error('Error updating filter descriptor:', error);
+        throw new Error('Failed to update filter descriptor');
+    }
+};
+
+export const deleteFilterDescriptor = async (id) => {
+    try {
+        const filterId = parseInt(id);
+        const existingFilter = filterDescriptors.get(filterId);
+        
+        if (!existingFilter) {
+            return false;
+        }
+
+        filterDescriptors.delete(filterId);
+        //   await filterDescriptorModel.delete(filterId);
+        return true;
+    } catch (error) {
+        console.error('Error deleting filter descriptor:', error);
+        throw new Error('Failed to delete filter descriptor');
+    }
+};
+
 export default {
     getFilters,
-    createFilterDescriptor
+    createFilterDescriptor,
+    getFilterById,
+    updateFilterDescriptor,
+    deleteFilterDescriptor
 };
