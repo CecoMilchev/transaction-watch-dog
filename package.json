@@ -1,0 +1,31 @@
+{
+  "name": "transaction-watch-dog",
+  "version": "1.0.0",
+  "description": "An application that tracks all ETH transactions through Infura. Accepts rule sets to execute and store transactions in rdb.",
+  "main": "main.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CecoMilchev/transaction-watch-dog.git"
+  },
+  "keywords": [
+    "fetcher",
+    "parser",
+    "blockchain",
+    "etherium",
+    "monitor",
+    "transactions",
+    "blocks"
+  ],
+  "author": "Tsvetomir Milchev",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/CecoMilchev/transaction-watch-dog/issues"
+  },
+  "homepage": "https://github.com/CecoMilchev/transaction-watch-dog#readme"
+}
