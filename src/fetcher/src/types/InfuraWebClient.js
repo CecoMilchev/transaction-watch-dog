@@ -14,10 +14,12 @@ export class InfuraWebClient {
 
     /**
      * @param {string} url - The WebSocket endpoint URL to connect to.
+     * @param {BlockProcessor} blockProcessor - An instance of BlockProcessor to handle incoming blocks.
      */
-    constructor(url) {
+    constructor(url, blockProcessor) {
         this.url = url;
         this.socket = new WebSocket(this.url);
+        this.blockProcessor = blockProcessor;
     }
 
     /**
@@ -49,6 +51,11 @@ export class InfuraWebClient {
         // const message: KrakenMessage = JSON.parse(event.data);
         const message = JSON.parse(event.data);
         console.log('Message from server:', message);
+
+        if(message.method === "eth_subscription" && message.params?.result) {
+            console.log("New block received:", message.params.result);
+            this.blockProcessor.processBlock(message.params?.result);
+        }
         // container.router.route(message);
         // this.router?.route(message);
         //console.log('Message from server: ', event.data);
