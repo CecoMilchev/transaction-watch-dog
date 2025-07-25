@@ -1,41 +1,45 @@
 import express from 'express';
 import compositeFilterDescriptorController from '../controllers/compositeFilterDescriptorController.js';
+import {
+  validateRequestBodyMiddleware,
+  validateUUIDParamMiddleware
+} from '../middleware/validateRequestBodyMiddleware.js';
 
 const router = express.Router();
 
 router.get(
   '/composite-filters',
-  //   validateRequestBodyMiddleware(),
+  validateRequestBodyMiddleware(),
   //   validateFilterDescriptorMiddleware(),
   compositeFilterDescriptorController.getCompositeFilterDescriptors
 );
 
 router.get(
   '/composite-filters/:id',
-  //   validateRequestBodyMiddleware(),
+  validateRequestBodyMiddleware(),
   //   validateFilterDescriptorMiddleware(),
   compositeFilterDescriptorController.getCompositeFilterDescriptorById
 );
 
 router.post(
   '/composite-filters',
-  //   validateRequestBodyMiddleware(),
+  validateRequestBodyMiddleware(),
   //   validateFilterDescriptorMiddleware(),
   compositeFilterDescriptorController.createCompositeFilterDescriptor
 );
 
 router.put(
   '/composite-filters/:id',
-  //   validateRequestBodyMiddleware(),
+  validateRequestBodyMiddleware(),
+  // validateUUIDParamMiddleware(),
   //   validateFilterDescriptorMiddleware(),
   compositeFilterDescriptorController.updateCompositeFilterDescriptor
 );
 
 router.delete(
   '/composite-filters/:id',
-  //   validateUUIDParamMiddleware(),
-  //   validateRequestBodyMiddleware(),
-  //   validateFilterDescriptorMiddleware(),
+  validateRequestBodyMiddleware(),
+  // validateUUIDParamMiddleware(),
   compositeFilterDescriptorController.deleteCompositeFilterDescriptor
 );
 
