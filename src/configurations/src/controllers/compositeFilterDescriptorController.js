@@ -16,7 +16,30 @@ export const getCompositeFilterDescriptors = async (req, res) => {
     }
 }
 
-export const getCompositeFilterDescriptorById = async (req, res) => {}
+export const getCompositeFilterDescriptorById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const composite = await compositeFilterDescriptorService.getFilterById(id);
+
+        if (!composite) {
+            return res.status(404).json({
+                success: false,
+                error: 'Composite filter descriptor not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            data: composite
+        });
+    } catch (error) {
+        console.error('Error retrieving composite filter descriptor:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+}
 
 export const createCompositeFilterDescriptor = async (req, res) => {
   try {
@@ -36,9 +59,56 @@ export const createCompositeFilterDescriptor = async (req, res) => {
   }
 };
 
-export const updateCompositeFilterDescriptor = async (req, res) => {}
+export const updateCompositeFilterDescriptor = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updatedComposite = await compositeFilterDescriptorService.updateFilterDescriptor(id, req.body);
 
-export const deleteCompositeFilterDescriptor = async (req, res) => {}
+        if (!updatedComposite) {
+            return res.status(404).json({
+                success: false,
+                error: 'Composite filter descriptor not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            data: updatedComposite,
+            message: 'Composite filter descriptor updated successfully'
+        });
+    } catch (error) {
+        console.error('Error updating composite filter descriptor:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+}
+
+export const deleteCompositeFilterDescriptor = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const deleted = await compositeFilterDescriptorService.deleteFilterDescriptor(id);
+
+        if (!deleted) {
+            return res.status(404).json({
+                success: false,
+                error: 'Composite filter descriptor not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: 'Composite filter descriptor deleted successfully'
+        });
+    } catch (error) {
+        console.error('Error deleting composite filter descriptor:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+}
 
 export default {
     getCompositeFilterDescriptors,
