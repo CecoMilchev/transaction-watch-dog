@@ -1,9 +1,11 @@
-export class BlockProcessor {
+import { EventEmitter } from 'events';
+
+export class BlockProcessor extends EventEmitter {
     blocks = [];
     lastBlock;
 
     constructor() {
-        // Initialize any required properties
+        super();
     }
 
     processBlock(block) {
@@ -12,8 +14,10 @@ export class BlockProcessor {
             return;
         }
 
-        // Process the block (e.g., save it to a database, etc.)
-        this.lastBlock = block;
         this.blocks.push(block);
+
+        this.emit('blockProcessed', {
+            blockNumber: block.number
+        });
     }
 }
