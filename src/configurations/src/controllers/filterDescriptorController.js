@@ -1,4 +1,6 @@
-import filterDescriptorService from '../services/filterDescriptorService.js';
+import FilterDescriptorService from '../services/filterDescriptorService.js';
+
+const filterDescriptorService = new FilterDescriptorService();
 
 export const getFiltersDescriptors = async (req, res) => {
     try {
