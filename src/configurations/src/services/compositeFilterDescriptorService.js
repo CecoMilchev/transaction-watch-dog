@@ -29,10 +29,27 @@ class CompositeFilterDescriptorService {
 
         if (data.filters?.length > 0) {
             for (let i = 0; i < data.filters.length; i++) {
-                const filter = await Filter.create(data.filters[i]);
+                const filterData = data.filters[i];
+                let filterId;
+
+                if (typeof filterData === 'number' || filterData.id) {
+                    // Use existing filter ID
+                    filterId = typeof filterData === 'number' ? filterData : filterData.id;
+                    
+                    // Verify the filter exists
+                    const existingFilter = await Filter.findByPk(filterId);
+                    if (!existingFilter) {
+                        throw new Error(`Filter with ID ${filterId} not found`);
+                    }
+                } else {
+                    // Create new filter from object
+                    const filter = await Filter.create(filterData);
+                    filterId = filter.id;
+                }
+
                 await CompositeFilterRule.create({
                     composite_filter_id: compositeFilter.id,
-                    filter_id: filter.id,
+                    filter_id: filterId,
                     position: i
                 });
             }
