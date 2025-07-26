@@ -17,5 +17,7 @@ export class BlockDelayService {
 
     async handleNewBlock({ blockNumber, blockData }) {
         console.log(`Processing new block: ${blockNumber}`);
+        // based on the delay, access redis,
+        // post it on kafka topic
     }
 }
