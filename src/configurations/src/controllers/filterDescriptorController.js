@@ -112,10 +112,74 @@ export const deleteFilterDescriptor = async (req, res) => {
     }
 }
 
+export const getActiveFilter = async (req, res) => {
+    try {
+        const activeFilter = await filterDescriptorService.getActiveFilter();
+        
+        if (!activeFilter) {
+            return res.status(404).json({
+                success: false,
+                message: 'No active filter found'
+            });
+        }
+
+        res.json({
+            success: true,
+            data: activeFilter
+        });
+    } catch (error) {
+        console.error('Error retrieving active filter:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+};
+
+export const setActiveFilter = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const activeFilter = await filterDescriptorService.setActiveFilter(id);
+        
+        res.json({
+            success: true,
+            data: activeFilter,
+            message: 'Active filter updated successfully'
+        });
+    } catch (error) {
+        console.error('Error setting active filter:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+};
+
+export const deactivateAllFilters = async (req, res) => {
+    try {
+        const result = await filterDescriptorService.deactivateAllFilters();
+        
+        res.json({
+            success: true,
+            data: result,
+            message: 'All filters deactivated successfully'
+        });
+    } catch (error) {
+        console.error('Error deactivating filters:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+};
+
 export default {
     getFiltersDescriptors, 
     createFilterDescriptor,
     getFilterDescriptorById,
     updateFilterDescriptor,
-    deleteFilterDescriptor
+    deleteFilterDescriptor,
+    getActiveFilter,
+    setActiveFilter,
+    deactivateAllFilters
 };
