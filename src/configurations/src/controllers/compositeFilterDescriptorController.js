@@ -1,8 +1,10 @@
-import compositeFilterDescriptorService from '../services/compositeFilterDescriptorService.js';
+import CompositeFilterDescriptorService from '../services/compositeFilterDescriptorService.js';
+
+const compositeFilterDescriptorService = new CompositeFilterDescriptorService();
 
 export const getCompositeFilterDescriptors = async (req, res) => {
     try {
-        const filters = await compositeFilterDescriptorService.getFilters();
+        const filters = await compositeFilterDescriptorService.getCompositeFilters();
         res.status(200).json({
             success: true,
             data: filters
@@ -19,7 +21,7 @@ export const getCompositeFilterDescriptors = async (req, res) => {
 export const getCompositeFilterDescriptorById = async (req, res) => {
     try {
         const { id } = req.params;
-        const composite = await compositeFilterDescriptorService.getFilterById(id);
+        const composite = await compositeFilterDescriptorService.getCompositeFilterById(id);
 
         if (!composite) {
             return res.status(404).json({
@@ -43,9 +45,7 @@ export const getCompositeFilterDescriptorById = async (req, res) => {
 
 export const createCompositeFilterDescriptor = async (req, res) => {
   try {
-    const filterDescriptor = await compositeFilterDescriptorService.createFilterDescriptor(req.body);
-
-    res.status(201).json({
+        const filterDescriptor = await compositeFilterDescriptorService.createCompositeFilterDescriptor(req.body);    res.status(201).json({
       success: true,
       data: filterDescriptor,
       message: 'Filter descriptor created successfully'
@@ -62,7 +62,7 @@ export const createCompositeFilterDescriptor = async (req, res) => {
 export const updateCompositeFilterDescriptor = async (req, res) => {
     try {
         const { id } = req.params;
-        const updatedComposite = await compositeFilterDescriptorService.updateFilterDescriptor(id, req.body);
+        const updatedComposite = await compositeFilterDescriptorService.updateCompositeFilterDescriptor(id, req.body);
 
         if (!updatedComposite) {
             return res.status(404).json({
@@ -88,7 +88,7 @@ export const updateCompositeFilterDescriptor = async (req, res) => {
 export const deleteCompositeFilterDescriptor = async (req, res) => {
     try {
         const { id } = req.params;
-        const deleted = await compositeFilterDescriptorService.deleteFilterDescriptor(id);
+        const deleted = await compositeFilterDescriptorService.deleteCompositeFilterDescriptor(id);
 
         if (!deleted) {
             return res.status(404).json({
