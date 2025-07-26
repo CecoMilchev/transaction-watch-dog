@@ -1,39 +1,46 @@
+import redisClient from 'ioredis';
+
 export class BlockStorageService {
-    blocks = [];
+    redisClient;
+    redisPublisher;
     maxBlocksToKeep = 100;
 
-    constructor() {
+    constructor(redisClient) {
+        this.redisClient = redisClient;
+        this.redisPublisher = redisClient.duplicate();
     }
 
-    addBlock(block) {
-        this.blocks.push(block);
-
-        if (this.blocks.length > this.maxBlocksToKeep) {
-            this.blocks = this.blocks.slice(-this.maxBlocksToKeep);
-        }
-
-        // this.blockDelayService.tryEmitMaturedBlock();
+    async addBlock(block) {
+        await this.saveBlockToRedis(block);
+        await this.publishBlockEvent(block);
     }
 
-    getBlock(blockNumber) {
-        return this.blocks.find(block => block.number === blockNumber);
+    async saveBlockToRedis(block) {
+        const blockKey = `block:${block.number}`;
+
+        const blockData = {
+            number: block.number,
+            hash: block.hash,
+            parentHash: block.parentHash,
+        };
+
+        // Store with 24 hour TTL (86400 seconds)
+        await this.redisClient.setex(blockKey, 86400, JSON.stringify(blockData));
+
+        // Add to sorted set for efficient range queries
+        await this.redisClient.zadd('blocks:all', block.number, block.number);
     }
 
-    getLastBlock() {
-        return this.blocks[this.blocks.length - 1] || null;
-    }
+    async publishBlockEvent(block) {
+        const blockEvent = {
+            blockNumber: block.number,
+            blockData: block,
+            eventType: 'blockAdded'
+        };
 
-    removeBlocksAfter(blockNumber) {
-        const initialLength = this.blocks.length;
-        this.blocks = this.blocks.filter(block => block.number <= blockNumber);
-        return initialLength - this.blocks.length;
-    }
+        console.log(`Published block ${block.number} to Redis channel 'blocks:new'`);
+        
+        await this.redisPublisher.publish('blocks:new', JSON.stringify(blockEvent));
 
-    getRecentBlocks(count = 10) {
-        return this.blocks.slice(-count);
-    }
-
-    getAllBlocks() {
-        return [...this.blocks];
     }
 }
