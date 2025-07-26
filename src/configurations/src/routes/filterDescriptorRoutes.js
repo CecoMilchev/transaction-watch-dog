@@ -40,4 +40,20 @@ router.delete('/filters/:id',
     filterdescriptorController.deleteFilterDescriptor
 );
 
+// Active filter endpoints
+router.get(
+    '/filters/active',
+    filterdescriptorController.getActiveFilter
+);
+
+router.put(
+    '/filters/:id/activate',
+    filterdescriptorController.setActiveFilter
+);
+
+router.put(
+    '/filters/deactivate',
+    filterdescriptorController.deactivateAllFilters
+);
+
 export default router;
