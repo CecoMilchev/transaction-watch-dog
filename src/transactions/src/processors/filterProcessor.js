@@ -1,3 +1,5 @@
+import { applyFilter } from '../utils/filterEngine.js';
+
 export class FilterProcessor {
     configConsumer;
     currentFilter;
@@ -5,7 +7,7 @@ export class FilterProcessor {
     constructor(configConsumer) {
         this.configConsumer = configConsumer;
 
-        this.addEventListeners();
+        //this.addEventListeners();
     }
 
     addEventListeners() {
@@ -19,10 +21,12 @@ export class FilterProcessor {
 
     filterTransactions(transactions) {
         console.log("Processing transactions:");
-
+        let filteredTransactions = transactions.filter(tx => applyFilter(tx, this.currentFilter));
         return {
             filterId: this.currentFilter?.id || null,
-            transactions: []
+            transactions: filteredTransactions
         }
     }
 }
+
+export default FilterProcessor;
