@@ -9,15 +9,11 @@ const router = express.Router();
 
 router.get(
   '/composite-filters',
-  validateRequestBodyMiddleware(),
-  //   validateFilterDescriptorMiddleware(),
   compositeFilterDescriptorController.getCompositeFilterDescriptors
 );
 
 router.get(
   '/composite-filters/:id',
-  validateRequestBodyMiddleware(),
-  //   validateFilterDescriptorMiddleware(),
   compositeFilterDescriptorController.getCompositeFilterDescriptorById
 );
 
