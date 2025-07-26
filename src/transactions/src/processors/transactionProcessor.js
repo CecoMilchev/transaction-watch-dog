@@ -19,9 +19,9 @@ export class TransactionProcessor {
         console.log('Block received:', block);
         // Process the block and transactions
         const transactions = block.transactions || [];
-        const filterResults = this.filterProcessor.processTransactions(transactions);
-        
+        const filterResults = this.filterProcessor.filterTransactions(transactions);
+        console.log(filterResults);
         // Save matched transactions
-        this.transactionService.saveMatchedTransactions(filterResults);
+        // this.transactionService.saveMatchedTransactions(filterResults);
     }
 }
