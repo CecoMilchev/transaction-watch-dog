@@ -39,4 +39,20 @@ router.delete(
   compositeFilterDescriptorController.deleteCompositeFilterDescriptor
 );
 
+// Active filter endpoints
+router.get(
+  '/composite-filters/active',
+  compositeFilterDescriptorController.getActiveFilter
+);
+
+router.put(
+  '/composite-filters/:id/activate',
+  compositeFilterDescriptorController.setActiveFilter
+);
+
+router.put(
+  '/composite-filters/deactivate',
+  compositeFilterDescriptorController.deactivateAllFilters
+);
+
 export default router;
