@@ -18,12 +18,16 @@ const CompositeFilter = sequelize.define('CompositeFilter', {
             isIn: [['AND', 'OR']]
         },
         defaultValue: 'AND'
+    },
+    is_active: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
     }
 }, {
     tableName: 'composite_filters',
     timestamps: true,
     createdAt: 'created_at',
-    updatedAt: false
+    updatedAt: 'updated_at'
 });
 
 export default CompositeFilter;

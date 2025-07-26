@@ -23,12 +23,17 @@ const Filter = sequelize.define('Filter', {
         type: DataTypes.STRING,
         allowNull: true,
         comment: 'Type of value: string, number, boolean, etc.'
+    },
+    is_active: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
     }
 }, {
     tableName: 'filters',
     timestamps: true,
     createdAt: 'created_at',
-    updatedAt: false
+    updatedAt: 'updated_at'
 });
 
 export default Filter;
