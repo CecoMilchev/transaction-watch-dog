@@ -1,11 +1,12 @@
 import { EventEmitter } from 'events';
 
 export class BlockProcessor extends EventEmitter {
-    blocks = [];
+    blockStorage;
     lastBlock;
 
-    constructor() {
+    constructor(blockStorage) {
         super();
+        this.blockStorage = blockStorage;
     }
 
     processBlock(block) {
@@ -14,7 +15,7 @@ export class BlockProcessor extends EventEmitter {
             return;
         }
 
-        this.blocks.push(block);
+        this.blockStorage.addBlock(block);
 
         this.emit('blockProcessed', {
             blockNumber: block.number
