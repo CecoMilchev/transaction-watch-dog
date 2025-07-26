@@ -5,14 +5,16 @@ export class BlockStorageService {
     constructor() {
     }
 
-    storeBlock(block) {
+    addBlock(block) {
         this.blocks.push(block);
-        
+
         if (this.blocks.length > this.maxBlocksToKeep) {
             this.blocks = this.blocks.slice(-this.maxBlocksToKeep);
         }
+
+        // this.blockDelayService.tryEmitMaturedBlock();
     }
-    
+
     getBlock(blockNumber) {
         return this.blocks.find(block => block.number === blockNumber);
     }
