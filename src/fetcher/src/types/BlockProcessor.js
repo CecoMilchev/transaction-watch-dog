@@ -1,11 +1,8 @@
-import { EventEmitter } from 'events';
-
-export class BlockProcessor extends EventEmitter {
+export class BlockProcessor {
     blockStorage;
     lastBlock;
 
     constructor(blockStorage) {
-        super();
         this.blockStorage = blockStorage;
     }
 
@@ -16,9 +13,5 @@ export class BlockProcessor extends EventEmitter {
         }
 
         this.blockStorage.addBlock(block);
-
-        this.emit('blockProcessed', {
-            blockNumber: block.number
-        });
     }
 }
