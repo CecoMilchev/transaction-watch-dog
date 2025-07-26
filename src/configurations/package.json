@@ -6,8 +6,8 @@
   "scripts": {
     "start": "node src/app.js",
     "dev": "nodemon src/app.js",
-    "db:sync": "node src/database/sync.js",
-    "db:reset": "node src/database/sync.js --force",
+    "db:sync": "node src/db/sync.js",
+    "db:reset": "node src/db/sync.js --force",
     "test": "test"
   },
   "keywords": [],
