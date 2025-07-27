@@ -16,10 +16,15 @@
     "setup:db": "npm run db:sync:configurations && npm run db:sync:transactions",
     "db:sync:configurations": "cd src/configurations && npm run db:sync",
     "db:sync:transactions": "cd src/transactions && npm run db:sync",
+    "dev": "concurrently \"npm run start:configurations\" \"npm run start:fetcher\" \"npm run start:transactions\"",
+    "start": "npm run dev",
     "start:configurations": "cd src/configurations && npm run dev",
     "start:fetcher": "cd src/fetcher && npm run dev",
     "start:transactions": "cd src/transactions && npm run dev",
     "test": "echo \"No tests specified\" && exit 0"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
   },
   "repository": {
     "type": "git",
