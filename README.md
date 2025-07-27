@@ -3,6 +3,12 @@ An application that tracks all ETH transactions through Infura. Accepts rule set
 
 > For a step-by-step walkthrough check out the [dedicated Walkthrough page](docs/WALKTHROUGH.md).
 
+## System Design 
+
+The design is comprised of 3 microservices - Configurations service, Transactions service, Fetcher service
+
+![System Design Diagram](/docs/screenshots/4.architecture.png)
+
 ## Quick Start
 
 ### Prerequisites
@@ -36,3 +42,10 @@ npm start
 ### Monitoring
 - Kafka UI: http://localhost:8080
 - Configuration API: http://localhost:3000/api
+
+### Next Steps 
+
+- Logging
+- Unit/e2e test (we have a gread SOLID-compliant solutions, so the writing them will be a breeze).
+- Type definitions
+- More validation
