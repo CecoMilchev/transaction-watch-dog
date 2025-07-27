@@ -1,13 +1,24 @@
-import { Filter, CompositeFilter } from '../models/index.js';
-import { Op } from 'sequelize';
+import { Filter } from '../models/index.js';
 
 class FilterDescriptorService {
+    constructor(kafkaProducerService) {
+        this.kafkaProducerService = kafkaProducerService;
+    }
+
     async getFilters() {
         return await Filter.findAll();
     }
 
+    async getActiveFilters() {
+        return await Filter.findAll({ where: { is_active: true } });
+    }
+
     async createFilterDescriptor(data) {
-        return await Filter.create(data);
+        const filter = await Filter.create(data);
+        
+        await this.kafkaProducerService.publishFilterUpdate(filter);
+        
+        return filter;
     }
 
     async getFilterById(id) {
@@ -15,54 +26,50 @@ class FilterDescriptorService {
     }
 
     async updateFilterDescriptor(id, data) {
+        const oldFilter = await Filter.findByPk(id);
+        if (!oldFilter) {
+            return null;
+        }
+
         await Filter.update(data, { where: { id } });
-        return await Filter.findByPk(id);
+        const updatedFilter = await Filter.findByPk(id);
+        
+        await this.kafkaProducerService.publishFilterUpdate(updatedFilter);
+        
+        return updatedFilter;
+    }
+
+    async activateFilter(id) {
+        const filter = await Filter.findByPk(id);
+        if (!filter) {
+            return null;
+        }
+
+        await Filter.update({ is_active: true }, { where: { id } });
+        const updatedFilter = await Filter.findByPk(id);
+        
+        await this.kafkaProducerService.publishFilterUpdate(updatedFilter);
+        
+        return updatedFilter;
+    }
+
+    async deactivateFilter(id) {
+        const filter = await Filter.findByPk(id);
+        if (!filter) {
+            return null;
+        }
+
+        await Filter.update({ is_active: false }, { where: { id } });
+        const updatedFilter = await Filter.findByPk(id);
+        
+        await this.kafkaProducerService.publishFilterUpdate(updatedFilter);
+        
+        return updatedFilter;
     }
 
     async deleteFilterDescriptor(id) {
-        return await Filter.destroy({ where: { id } });
-    }
-
-    async getActiveFilter() {
-        return await Filter.findOne({ where: { is_active: true } });
-    }
-
-    async setActiveFilter(id) {
-        // First, deactivate all filters (both simple and composite)
-        await Filter.update(
-            { is_active: false, updated_at: new Date() },
-            { where: { is_active: true } }
-        );
-        
-        await CompositeFilter.update(
-            { is_active: false, updated_at: new Date() },
-            { where: { is_active: true } }
-        );
-
-        // Then activate the specified filter
-        await Filter.update(
-            { is_active: true, updated_at: new Date() },
-            { where: { id } }
-        );
-
-        return await Filter.findByPk(id);
-    }
-
-    async deactivateAllFilters() {
-        // Deactivate all simple filters
-        await Filter.update(
-            { is_active: false, updated_at: new Date() },
-            { where: { is_active: true } }
-        );
-        
-        // Deactivate all composite filters
-        await CompositeFilter.update(
-            { is_active: false, updated_at: new Date() },
-            { where: { is_active: true } }
-        );
-        
-        console.log('All filters have been deactivated');
-        return { message: 'All filters deactivated successfully' };
+        const result = await Filter.destroy({ where: { id } });
+        return result;
     }
 }
 

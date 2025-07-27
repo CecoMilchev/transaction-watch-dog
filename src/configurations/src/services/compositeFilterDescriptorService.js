@@ -1,9 +1,23 @@
 import { Filter, CompositeFilter, CompositeFilterRule } from '../models/index.js';
-import { Op } from 'sequelize';
 
 class CompositeFilterDescriptorService {
+    constructor(kafkaProducerService) {
+        this.kafkaProducerService = kafkaProducerService;
+    }
+
     async getCompositeFilters() {
         return await CompositeFilter.findAll({
+            include: [{
+                model: Filter,
+                as: 'filters',
+                through: { attributes: ['position'] }
+            }]
+        });
+    }
+
+    async getActiveCompositeFilters() {
+        return await CompositeFilter.findAll({
+            where: { is_active: true },
             include: [{
                 model: Filter,
                 as: 'filters',
@@ -22,56 +36,11 @@ class CompositeFilterDescriptorService {
         });
     }
 
-    async getActiveCompositeFilter() {
-        return await CompositeFilter.findOne({
-            where: { is_active: true },
-            include: [{
-                model: Filter,
-                as: 'filters',
-                through: { attributes: ['position'] }
-            }]
-        });
-    }
-
-    async setActiveCompositeFilter(id) {
-        // Deactivate all filters first (both simple and composite)
-        await Filter.update(
-            { is_active: false, updated_at: new Date() },
-            { where: { is_active: true } }
-        );
-        
-        await CompositeFilter.update(
-            { is_active: false, updated_at: new Date() }, 
-            { where: { is_active: true } }
-        );
-        
-        // Activate the specified filter
-        const [updatedRows] = await CompositeFilter.update(
-            { is_active: true, updated_at: new Date() }, 
-            { where: { id } }
-        );
-        
-        if (updatedRows === 0) {
-            throw new Error(`Composite filter with ID ${id} not found`);
-        }
-        
-        return await this.getCompositeFilterById(id);
-    }
-
     async createCompositeFilterDescriptor(data) {
         const compositeFilter = await CompositeFilter.create({
             name: data.name,
-            logical_operator: data.logicOperator || 'AND',
-            is_active: data.setAsActive || false
+            logical_operator: data.logicOperator || 'AND'
         });
-
-        // If setting as active, deactivate others first
-        if (data.setAsActive) {
-            await CompositeFilter.update(
-                { is_active: false }, 
-                { where: { id: { [Op.ne]: compositeFilter.id } } }
-            );
-        }
 
         if (data.filters?.length > 0) {
             for (let i = 0; i < data.filters.length; i++) {
@@ -101,33 +70,56 @@ class CompositeFilterDescriptorService {
             }
         }
 
+        await this.kafkaProducerService.publishFilterUpdate(compositeFilter);
+
         return compositeFilter;
     }
 
     async updateCompositeFilterDescriptor(id, data) {
+        const oldFilter = await CompositeFilter.findByPk(id);
+        if (!oldFilter) {
+            return null;
+        }
+
         await CompositeFilter.update(data, { where: { id } });
-        return await CompositeFilter.findByPk(id);
+        const updatedFilter = await CompositeFilter.findByPk(id);
+        
+        await this.kafkaProducerService.publishFilterUpdate(updatedFilter);
+        
+        return updatedFilter;
+    }
+
+    async activateCompositeFilter(id) {
+        const compositeFilter = await CompositeFilter.findByPk(id);
+        if (!compositeFilter) {
+            return null;
+        }
+
+        await CompositeFilter.update({ is_active: true }, { where: { id } });
+        const updatedFilter = await CompositeFilter.findByPk(id);
+        
+        await this.kafkaProducerService.publishFilterUpdate(updatedFilter);
+        
+        return updatedFilter;
+    }
+
+    async deactivateCompositeFilter(id) {
+        const compositeFilter = await CompositeFilter.findByPk(id);
+        if (!compositeFilter) {
+            return null;
+        }
+
+        await CompositeFilter.update({ is_active: false }, { where: { id } });
+        const updatedFilter = await CompositeFilter.findByPk(id);
+        
+        await this.kafkaProducerService.publishFilterUpdate(updatedFilter);
+        
+        return updatedFilter;
     }
 
     async deleteCompositeFilterDescriptor(id) {
-        return await CompositeFilter.destroy({ where: { id } });
-    }
-
-    async deactivateAllFilters() {
-        // Deactivate all simple filters
-        await Filter.update(
-            { is_active: false, updated_at: new Date() },
-            { where: { is_active: true } }
-        );
-        
-        // Deactivate all composite filters
-        await CompositeFilter.update(
-            { is_active: false, updated_at: new Date() },
-            { where: { is_active: true } }
-        );
-        
-        console.log('All filters have been deactivated');
-        return { message: 'All filters deactivated successfully' };
+        const result = await CompositeFilter.destroy({ where: { id } });
+        return result;
     }
 }
 
