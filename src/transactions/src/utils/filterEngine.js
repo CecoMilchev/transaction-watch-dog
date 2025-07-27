@@ -1,6 +1,6 @@
 const OPERATORS = {
-    eq: (a, b) => a === b,
-    neq: (a, b) => a !== b,
+    eq: (a, b) => a == b,
+    neq: (a, b) => a != b,
     lt: (a, b) => a < b,
     lte: (a, b) => a <= b,
     gt: (a, b) => a > b,
@@ -12,16 +12,29 @@ const OPERATORS = {
 };
 
 export function applyFilter(obj, descriptor) {
+    console.log(descriptor);
+    // Handle composite filters with multiple conditions
     if (descriptor.filters && Array.isArray(descriptor.filters)) {
-        const { logic, filters } = descriptor;
+        const { logicalOperator, filters } = descriptor;
         const evals = filters.map(f => applyFilter(obj, f));
-        return logic === 'and'
+        
+        // Support both 'AND'/'OR' and 'and'/'or' (case insensitive)
+        const operator = (logicalOperator || 'AND').toLowerCase();
+        
+        return operator === 'and'
             ? evals.every(Boolean)
             : evals.some(Boolean);
     }
 
     const { field, operator, value } = descriptor;
-    const actual = getNestedValue(obj, field);
+    
+    // Check if required properties are present
+    if (!field || !operator) {
+        console.warn('Invalid filter descriptor:', descriptor);
+        return false;
+    }
+    
+    const actual = obj[field];
     const fn = OPERATORS[operator];
 
     if (!fn) {
@@ -29,8 +42,4 @@ export function applyFilter(obj, descriptor) {
     }
 
     return fn(actual, value);
-}
-
-function getNestedValue(obj, path) {
-    return path.split('.').reduce((acc, key) => acc?.[key], obj);
 }
