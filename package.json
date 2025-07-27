@@ -7,7 +7,19 @@
     "doc": "docs"
   },
   "scripts": {
-    "test": "test"
+    "setup": "npm run install:all && npm run setup:env",
+    "install:all": "npm run install:configurations && npm run install:fetcher && npm run install:transactions",
+    "install:configurations": "cd src/configurations && npm install",
+    "install:fetcher": "cd src/fetcher && npm install",
+    "install:transactions": "cd src/transactions && npm install",
+    "setup:env": "node scripts/setup-env.js",
+    "setup:db": "npm run db:sync:configurations && npm run db:sync:transactions",
+    "db:sync:configurations": "cd src/configurations && npm run db:sync",
+    "db:sync:transactions": "cd src/transactions && npm run db:sync",
+    "start:configurations": "cd src/configurations && npm run dev",
+    "start:fetcher": "cd src/fetcher && npm run dev",
+    "start:transactions": "cd src/transactions && npm run dev",
+    "test": "echo \"No tests specified\" && exit 0"
   },
   "repository": {
     "type": "git",
