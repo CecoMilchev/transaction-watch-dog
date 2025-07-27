@@ -1,7 +1,12 @@
 export class TransactionProcessor {
-    constructor(filterProcessor, transactionService) {
+    constructor(filterProcessor, transactionService, transactionDetailsFetcher, provider) {
         this.filterProcessor = filterProcessor;
         this.transactionService = transactionService;
+        this.transactionDetailsFetcher = transactionDetailsFetcher;
+        this.provider = provider;
+        
+        this.addEventListeners();
+    }
     }
 
     async processBlock(blockInfo) {
