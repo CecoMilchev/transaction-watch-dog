@@ -59,8 +59,12 @@ export class BlockDelayService {
             maturityThreshold
         );
 
+        console.log(`[Delay-${this.delayBlocks}] Found ${matureBlockNumbers.length} mature blocks:`, matureBlockNumbers);
+
         for (const blockNumberStr of matureBlockNumbers) {
-            const blockNumber = parseInt(blockNumberStr);
+            const blockNumber = blockNumberStr.startsWith('0x') 
+                ? parseInt(blockNumberStr, 16) 
+                : parseInt(blockNumberStr);
             await this.processMaturedBlock(blockNumber);
         }
     }
