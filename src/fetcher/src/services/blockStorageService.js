@@ -16,10 +16,11 @@ export class BlockStorageService {
     }
 
     async saveBlockToRedis(block) {
-        const blockKey = `block:${block.number}`;
+        const blockNumber = parseInt(block.number, 16);
+        const blockKey = `block:${blockNumber}`;
 
         const blockData = {
-            number: block.number,
+            number: blockNumber,
             hash: block.hash,
             parentHash: block.parentHash,
         };
@@ -41,6 +42,5 @@ export class BlockStorageService {
         console.log(`Published block ${block.number} to Redis channel 'blocks:new'`);
         
         await this.redisPublisher.publish('blocks:new', JSON.stringify(blockEvent));
-
     }
 }
