@@ -1,13 +1,17 @@
 import on from 'events';
 import redisClient from 'ioredis';
+
 export class BlockDelayService {
     delayBlocks;
     redisClient;
+    kafkaProducer;
 
-    constructor(redisClient, delayBlocks = 2) {
+    constructor(redisClient, kafkaProducerService, delayBlocks = 2) {
         this.redisClient = redisClient;
         this.redisSubscriber = redisClient.duplicate(); // Separate client for subscriptions
         this.delayBlocks = delayBlocks;
+        this.delayId = `delay-${delayBlocks}`;
+        this.kafkaProducer = kafkaProducerService;
 
         this.addEventListeners();
     }
@@ -83,10 +87,12 @@ export class BlockDelayService {
             const blockData = JSON.parse(blockDataStr);
 
             console.log(`Emitting matured block ${blockNumber} with delay ${this.delayBlocks}`);
+            
+            await this.kafkaProducer.publishDelayedBlock(blockData, this.delayBlocks);
+            
             // Mark as processed
             await this.redisClient.setex(processedKey, 86400, Date.now());
 
-            // TODO: Publish on Kafka
         } catch (error) {
             console.error(`Error processing matured block ${blockNumber}:`, error);
         }
