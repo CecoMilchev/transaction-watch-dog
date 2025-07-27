@@ -29,17 +29,18 @@ export class BlockStorageService {
         await this.redisClient.setex(blockKey, 86400, JSON.stringify(blockData));
 
         // Add to sorted set for efficient range queries
-        await this.redisClient.zadd('blocks:all', block.number, block.number);
+        await this.redisClient.zadd('blocks:all', blockNumber, blockNumber);
     }
 
     async publishBlockEvent(block) {
+        const blockNumber = parseInt(block.number, 16);
         const blockEvent = {
-            blockNumber: block.number,
+            blockNumber: blockNumber,
             blockData: block,
             eventType: 'blockAdded'
         };
 
-        console.log(`Published block ${block.number} to Redis channel 'blocks:new'`);
+        console.log(`Published block ${blockNumber} to Redis channel 'blocks:new'`);
         
         await this.redisPublisher.publish('blocks:new', JSON.stringify(blockEvent));
     }
