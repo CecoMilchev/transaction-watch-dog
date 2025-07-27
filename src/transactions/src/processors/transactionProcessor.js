@@ -7,6 +7,14 @@ export class TransactionProcessor {
         
         this.addEventListeners();
     }
+
+    addEventListeners() {
+        this.transactionDetailsFetcher?.on('batchComplete', this.processBatch.bind(this));
+    }
+
+    processBatch(data) {
+        const filterResults = this.filterProcessor.filterTransactions(data.processed);
+        console.log(`📊 Found ${filterResults.transactions?.length || 0} matching transactions, ${filterResults.filterId}`);
     }
 
     async processBlock(blockInfo) {
