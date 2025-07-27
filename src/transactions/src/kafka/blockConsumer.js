@@ -32,7 +32,7 @@ export class BlockConsumer {
                 delayBlocks: blockData.delayBlocks
             };
 
-            await this.transactionProcessor.processDelayedBlock(blockInfo);
+            await this.transactionProcessor.processBlock(blockInfo);
             
         } catch (error) {
             console.error(`❌ Error handling delayed block ${blockData.blockNumber}:`, error);
