@@ -1,4 +1,6 @@
 export class TransactionProcessor {
+    currentBlockInfo;
+
     constructor(filterProcessor, transactionService, transactionDetailsFetcher, provider) {
         this.filterProcessor = filterProcessor;
         this.transactionService = transactionService;
@@ -12,16 +14,21 @@ export class TransactionProcessor {
         this.transactionDetailsFetcher?.on('batchComplete', this.processBatch.bind(this));
     }
 
-    processBatch(data) {
+    async processBatch(data) {
         const filterResults = this.filterProcessor.filterTransactions(data.processed);
-        console.log(`📊 Found ${filterResults.transactions?.length || 0} matching transactions, ${filterResults.filterId}`);
+
+            if (this.transactionService && filterResults.transactions?.length > 0) {
+                await this.transactionService.saveMatchedTransactions({
+                    ...filterResults
+                });
+            }
     }
 
     async processBlock(blockInfo) {
+        this.currentBlockInfo = blockInfo;
         console.log(`🔄 TransactionProcessor: Processing block ${blockInfo.number}`);
         
         try {
-            // Step 1: Fetch basic block info to get transaction hashes
             const transactionHashes = await this.fetchTransactionHashesForBlock(blockInfo.number);
             
             if (transactionHashes.length === 0) {
@@ -31,29 +38,9 @@ export class TransactionProcessor {
 
             console.log(`📋 Found ${transactionHashes.length} transaction hashes in block ${blockInfo.number}`);
 
-            // Step 2: Fetch full transaction details using the rate-limited service
-            const transactions = await this.transactionDetailsFetcher.fetchTransactionDetails(transactionHashes);
-            //const transactions = [{maxFeePerGas: 1354247125}];
-            // Filter out null transactions (failed fetches)
-            const validTransactions = transactions.filter(tx => tx !== null);
-            console.log(`✅ Successfully fetched ${validTransactions.length}/${transactionHashes.length} transactions`);
-
-            // Step 3: Apply filters to transactions
-            const filterResults = this.filterProcessor.filterTransactions(validTransactions);
-            console.log(`📊 Found ${filterResults.transactions?.length || 0} matching transactions, ${filterResults.filterId}`);
-            
-            // Step 4: Save matched transactions (if service available)
-            if (this.transactionService && filterResults.transactions?.length > 0) {
-                await this.transactionService.saveMatchedTransactions({
-                    ...filterResults,
-                    blockInfo,
-                    totalTransactions: transactionHashes.length,
-                    processedTransactions: validTransactions.length
-                });
-            }
-            
+            await this.transactionDetailsFetcher.fetchTransactionDetails(transactionHashes);
         } catch (error) {
-            console.error(`❌ Error processing block ${blockInfo.number}:`, error);
+            console.error(`❌ Error processing delayed block ${blockInfo.number}:`, error);
         }
     }
 
@@ -61,7 +48,6 @@ export class TransactionProcessor {
         try {
             console.log(`🔍 Fetching transaction hashes for block ${blockNumber}`);
             
-            // Fetch block with transaction hashes only (not full transaction objects)
             const block = await this.provider.getBlock(blockNumber, true);
             
             if (!block) {
