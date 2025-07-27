@@ -1,13 +1,7 @@
 import dotenv from 'dotenv';
-import { TransactionProcessor } from './processors/transactionProcessor.js';
-import { FilterProcessor } from './processors/filterProcessor.js';
-import { TransactionDetailsFetcher } from './services/transactionDetailsFetcher.js';
-import { TransactionService } from './services/transactionService.js';
-import { ConfigConsumer } from './kafka/configConsumer.js';
-import { BlockConsumer } from './kafka/blockConsumer.js';
-import { KafkaConsumerService } from './kafka/kafkaConsumerService.js';
 import { Kafka } from 'kafkajs';
-import { ethers } from 'ethers';
+import { asValue } from 'awilix';
+import container from './container.js';
 
 dotenv.config();
 
@@ -22,33 +16,12 @@ dotenv.config();
     const kafkaConsumer = kafka.consumer({ groupId: 'transactions-group' });
     await kafkaConsumer.connect();
     
-    // Setup Infura provider
-    const providerUrl = `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`;
-    const provider = new ethers.JsonRpcProvider(providerUrl);
+    // Register the kafkaConsumer instance in the container
+    container.register('kafkaConsumer', asValue(kafkaConsumer));
     
-    // Create services
-    const configConsumer = new ConfigConsumer();
-    const filterProcessor = new FilterProcessor(configConsumer);
-    const transactionService = new TransactionService();
-
-    const transactionDetailsFetcher = new TransactionDetailsFetcher(provider, {
-        rateLimit: 500,
-        creditsPerTransaction: 80,
-        batchSize: 16,
-        delayBetweenBatches: 0
-    });
-    
-    // Create processors
-    const transactionProcessor = new TransactionProcessor(
-        filterProcessor,
-        transactionService,
-        transactionDetailsFetcher,
-        provider
-    );
-    
-    // Create Kafka consumers
-    const kafkaConsumerService = new KafkaConsumerService({ kafkaConsumer });
-    const blockConsumer = new BlockConsumer(kafkaConsumerService, transactionProcessor);
+    // Resolve services from container
+    const configConsumer = container.resolve('configConsumer');
+    const blockConsumer = container.resolve('blockConsumer');
     
     // Initialize all services
     console.log('� Initializing services...');
