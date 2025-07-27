@@ -1,19 +1,26 @@
 import express from 'express';
+import container from './container.js';
 import filterDescriptorRoutes from './routes/filterDescriptorRoutes.js';
 import compositeFilterDescriptorRoutes from './routes/compositeFilterDescriptorRoutes.js';
 
-const app = express();
-const port = process.env.PORT || 3000;
+(async () => {
+    const app = express();
+    const port = process.env.PORT || 3000;
 
-app.use(express.json());
-app.use('/api', filterDescriptorRoutes);
-app.use('/api', compositeFilterDescriptorRoutes);
+    // Initialize kafka producer service
+    const kafkaProducerService = container.resolve('kafkaProducerService');
+    await kafkaProducerService.connect();
 
-app.use((req, res, next) => {
-    console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
-    next();
-});
+    app.use(express.json());
+    app.use('/api', filterDescriptorRoutes);
+    app.use('/api', compositeFilterDescriptorRoutes);
 
-app.listen(port, () => {
-    console.log(`\nConfiguration service listening on port ${port}!\n`);
-});
+    app.use((req, res, next) => {
+        console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+        next();
+    });
+
+    app.listen(port, () => {
+        console.log(`\nConfiguration service listening on port ${port}!\n`);
+    });
+})().catch(console.error);
