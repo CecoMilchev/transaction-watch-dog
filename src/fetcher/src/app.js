@@ -33,6 +33,6 @@ dotenv.config();
     console.log('✅ Fetcher Service starting...');
     
     setTimeout(() => client.connect(), 1000);
-    setTimeout(() => client.disconnect(), 60 * 1000);
-    setTimeout(() => process.exit(0), 60 * 1000);
+    // setTimeout(() => client.disconnect(), 60 * 1000);
+    // setTimeout(() => process.exit(0), 60 * 1000);
 })().catch(console.error);
