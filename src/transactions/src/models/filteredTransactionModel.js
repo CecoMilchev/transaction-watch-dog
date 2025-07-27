@@ -3,103 +3,109 @@ import sequelize from '../db/database.js';
 
 const FilteredTransaction = sequelize.define('FilteredTransaction', {
     id: {
-        type: DataTypes.BIGINT,
+        type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true
     },
     hash: {
         type: DataTypes.STRING(66),
         allowNull: true,
-        index: true
+        defaultValue: null
     },
     from: {
         type: DataTypes.STRING(42),
         allowNull: true,
-        index: true
+        defaultValue: null
     },
     to: {
         type: DataTypes.STRING(42),
         allowNull: true,
-        index: true
+        defaultValue: null
     },
     value: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true,
+        defaultValue: null
     },
     gasPrice: {
         type: DataTypes.STRING,
-        allowNull: true
+        allowNull: true,
+        defaultValue: null
     },
     gasLimit: {
         type: DataTypes.STRING,
-        allowNull: true
+        allowNull: true,
+        defaultValue: null
     },
     nonce: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true,
+        defaultValue: null
     },
     type: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true,
+        defaultValue: null
     },
     maxFeePerGas: {
         type: DataTypes.STRING,
-        allowNull: true
+        allowNull: true,
+        defaultValue: null
     },
     maxPriorityFeePerGas: {
         type: DataTypes.STRING,
-        allowNull: true
+        allowNull: true,
+        defaultValue: null
     },
     transactionIndex: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true,
+        defaultValue: null
     },
     blockNumber: {
         type: DataTypes.STRING,
         allowNull: true,
-        index: true
+        defaultValue: null
     },
     blockHash: {
         type: DataTypes.STRING(66),
         allowNull: true,
-        index: true
+        defaultValue: null
     },
     data: {
         type: DataTypes.TEXT,
-        allowNull: false
+        allowNull: true,
+        defaultValue: null
     },
     chainId: {
-        type: DataTypes.STRING,
-        allowNull: false
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        defaultValue: null
     },
     v: {
-        type: DataTypes.STRING,
-        allowNull: true
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        defaultValue: null
     },
     r: {
         type: DataTypes.STRING,
-        allowNull: true
+        allowNull: true,
+        defaultValue: null
     },
     s: {
         type: DataTypes.STRING,
-        allowNull: true
+        allowNull: true,
+        defaultValue: null
     },
     filterId: {
-        type: DataTypes.BIGINT,
-        allowNull: false,
-        index: true,
-        comment: 'ID of the filter that triggered this transaction to be saved'
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        defaultValue: null
     }
 }, {
     tableName: 'filtered_transactions',
-    indexes: [
-        {
-            fields: ['block_number']
-        },
-        {
-            fields: ['filter_id']
-        }
-    ]
+    timestamps: true,
+    underscored: true
 });
 
 export default FilteredTransaction;
