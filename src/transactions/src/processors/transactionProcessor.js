@@ -38,18 +38,20 @@ export class TransactionProcessor {
         }
     }
 
-    async fetchTransactionsForBlock(blockNumber) {
+    async fetchTransactionHashesForBlock(blockNumber) {
         try {
-            // For now, return empty array - you can implement Infura fetching here
-            console.log(`🔍 Fetching transactions for block ${blockNumber}`);
-            return [];
+            console.log(`🔍 Fetching transaction hashes for block ${blockNumber}`);
             
-            // TODO: Implement actual Infura API call
-            // const fullBlock = await this.provider.getBlock(blockNumber, true);
-            // return fullBlock.transactions || [];
+            const block = await this.provider.getBlock(blockNumber, true);
+            
+            if (!block) {
+                throw new Error(`Block ${blockNumber} not found`);
+            }
+
+            return block.transactions || [];
             
         } catch (error) {
-            console.error(`❌ Error fetching transactions for block ${blockNumber}:`, error);
+            console.error(`❌ Error fetching transaction hashes for block ${blockNumber}:`, error);
             return [];
         }
     }
