@@ -46,6 +46,6 @@ npm start
 ### Next Steps 
 
 - Logging
-- Unit/e2e test (we have a gread SOLID-compliant solutions, so the writing them will be a breeze).
+- Unit/e2e test (we have great SOLID-compliant solutions, so adding them will be a breeze).
 - Type definitions
 - More validation
