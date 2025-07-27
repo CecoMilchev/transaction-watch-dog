@@ -5,7 +5,11 @@ export class TransactionDetailsFetcher extends EventEmitter {
         super();
         this.provider = provider;
         this.requestsPerSecond = requestsPerSecond;
-        this.batchSize = 20;
+        // IMPORTANT: ONLY FOR TESTING
+        // Adjust accordingly. Values above 8 may hit rate limits.
+        // Infura imposes a limit of using 500 credits per second. (one request is 80 usually)
+        // The best I could get was 12 requests per second.
+        this.batchSize = 2;
     }
 
     async fetchTransactionDetails(transactionHashes) {
@@ -28,6 +32,12 @@ export class TransactionDetailsFetcher extends EventEmitter {
 
             this.emit('batchComplete', { batchNumber, totalBatches, processed: batchResults });
             
+            // IMPORTANT: ONLY FOR TESTING
+            // The idea is to test only the first batch of each block.
+            // Due to the rate limiting, with the "core" Infura plan, we cannot fetch
+            // all transactions in a block at once.
+            break;
+
             if (batchNumber < totalBatches) {
                 await this.sleep(1000 / this.requestsPerSecond);
             }
