@@ -112,66 +112,73 @@ export const deleteFilterDescriptor = async (req, res) => {
     }
 }
 
-export const getActiveFilter = async (req, res) => {
+export const activateFilterDescriptor = async (req, res) => {
     try {
-        const activeFilter = await filterDescriptorService.getActiveFilter();
-        
-        if (!activeFilter) {
+        const { id } = req.params;
+        const activatedFilter = await filterDescriptorService.activateFilter(id);
+
+        if (!activatedFilter) {
             return res.status(404).json({
                 success: false,
-                message: 'No active filter found'
+                error: 'Filter descriptor not found'
             });
         }
 
         res.json({
             success: true,
-            data: activeFilter
+            data: activatedFilter,
+            message: 'Filter descriptor activated successfully'
         });
     } catch (error) {
-        console.error('Error retrieving active filter:', error);
+        console.error('Error activating filter descriptor:', error);
         res.status(500).json({
             success: false,
             error: error.message
         });
     }
-};
+}
 
-export const setActiveFilter = async (req, res) => {
+export const deactivateFilterDescriptor = async (req, res) => {
     try {
         const { id } = req.params;
-        const activeFilter = await filterDescriptorService.setActiveFilter(id);
-        
-        res.json({
-            success: true,
-            data: activeFilter,
-            message: 'Active filter updated successfully'
-        });
-    } catch (error) {
-        console.error('Error setting active filter:', error);
-        res.status(500).json({
-            success: false,
-            error: error.message
-        });
-    }
-};
+        const deactivatedFilter = await filterDescriptorService.deactivateFilter(id);
 
-export const deactivateAllFilters = async (req, res) => {
-    try {
-        const result = await filterDescriptorService.deactivateAllFilters();
-        
+        if (!deactivatedFilter) {
+            return res.status(404).json({
+                success: false,
+                error: 'Filter descriptor not found'
+            });
+        }
+
         res.json({
             success: true,
-            data: result,
-            message: 'All filters deactivated successfully'
+            data: deactivatedFilter,
+            message: 'Filter descriptor deactivated successfully'
         });
     } catch (error) {
-        console.error('Error deactivating filters:', error);
+        console.error('Error deactivating filter descriptor:', error);
         res.status(500).json({
             success: false,
             error: error.message
         });
     }
-};
+}
+
+export const getActiveFiltersDescriptors = async (req, res) => {
+    try {
+        const filters = await filterDescriptorService.getActiveFilters();
+        res.status(200).json({
+            success: true,
+            data: filters
+        });
+    } catch (error) {
+        console.error('Error fetching active filter descriptors:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+}
 
 export default {
     getFiltersDescriptors, 
@@ -179,7 +186,7 @@ export default {
     getFilterDescriptorById,
     updateFilterDescriptor,
     deleteFilterDescriptor,
-    getActiveFilter,
-    setActiveFilter,
-    deactivateAllFilters
+    activateFilterDescriptor,
+    deactivateFilterDescriptor,
+    getActiveFiltersDescriptors
 };

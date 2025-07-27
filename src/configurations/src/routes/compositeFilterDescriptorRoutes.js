@@ -39,20 +39,22 @@ router.delete(
   compositeFilterDescriptorController.deleteCompositeFilterDescriptor
 );
 
-// Active filter endpoints
+// Active composite filter endpoints
 router.get(
   '/composite-filters/active',
-  compositeFilterDescriptorController.getActiveFilter
+  compositeFilterDescriptorController.getActiveCompositeFilterDescriptors
 );
 
 router.put(
   '/composite-filters/:id/activate',
-  compositeFilterDescriptorController.setActiveFilter
+  validateRequestBodyMiddleware(),
+  compositeFilterDescriptorController.activateCompositeFilterDescriptor
 );
 
 router.put(
-  '/composite-filters/deactivate',
-  compositeFilterDescriptorController.deactivateAllFilters
+  '/composite-filters/:id/deactivate',
+  validateRequestBodyMiddleware(),
+  compositeFilterDescriptorController.deactivateCompositeFilterDescriptor
 );
 
 export default router;
