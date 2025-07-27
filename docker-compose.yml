@@ -35,7 +35,7 @@ services:
 
   mysql-configurations:
     image: mysql:8.0
-    container_name: transaction-watch-dog-mysql
+    container_name: transaction-watch-dog-mysql-config
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: configurations_db
@@ -45,6 +45,20 @@ services:
       - "3306:3306"
     volumes:
       - mysql_config_data:/var/lib/mysql
+    restart: unless-stopped
+
+  mysql-transactions:
+    image: mysql:8.0
+    container_name: transaction-watch-dog-mysql-transactions
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: transactions_db
+      MYSQL_USER: transactions_user
+      MYSQL_PASSWORD: transactions_password
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_transactions_data:/var/lib/mysql
     restart: unless-stopped
 
   kafka-ui:
@@ -61,5 +75,6 @@ services:
 volumes:
   redis_data:
   mysql_config_data:
+  mysql_transactions_data:
   kafka_data:
   zookeeper_data:
