@@ -110,66 +110,73 @@ export const deleteCompositeFilterDescriptor = async (req, res) => {
     }
 }
 
-export const getActiveFilter = async (req, res) => {
+export const activateCompositeFilterDescriptor = async (req, res) => {
     try {
-        const activeFilter = await compositeFilterDescriptorService.getActiveCompositeFilter();
-        
-        if (!activeFilter) {
+        const { id } = req.params;
+        const activatedFilter = await compositeFilterDescriptorService.activateCompositeFilter(id);
+
+        if (!activatedFilter) {
             return res.status(404).json({
                 success: false,
-                message: 'No active composite filter found'
+                error: 'Composite filter descriptor not found'
             });
         }
 
         res.json({
             success: true,
-            data: activeFilter
+            data: activatedFilter,
+            message: 'Composite filter descriptor activated successfully'
         });
     } catch (error) {
-        console.error('Error retrieving active filter:', error);
+        console.error('Error activating composite filter descriptor:', error);
         res.status(500).json({
             success: false,
             error: error.message
         });
     }
-};
+}
 
-export const setActiveFilter = async (req, res) => {
+export const deactivateCompositeFilterDescriptor = async (req, res) => {
     try {
         const { id } = req.params;
-        const activeFilter = await compositeFilterDescriptorService.setActiveCompositeFilter(id);
-        
-        res.json({
-            success: true,
-            data: activeFilter,
-            message: 'Active filter updated successfully'
-        });
-    } catch (error) {
-        console.error('Error setting active filter:', error);
-        res.status(500).json({
-            success: false,
-            error: error.message
-        });
-    }
-};
+        const deactivatedFilter = await compositeFilterDescriptorService.deactivateCompositeFilter(id);
 
-export const deactivateAllFilters = async (req, res) => {
-    try {
-        const result = await compositeFilterDescriptorService.deactivateAllFilters();
-        
+        if (!deactivatedFilter) {
+            return res.status(404).json({
+                success: false,
+                error: 'Composite filter descriptor not found'
+            });
+        }
+
         res.json({
             success: true,
-            data: result,
-            message: 'All filters deactivated successfully'
+            data: deactivatedFilter,
+            message: 'Composite filter descriptor deactivated successfully'
         });
     } catch (error) {
-        console.error('Error deactivating filters:', error);
+        console.error('Error deactivating composite filter descriptor:', error);
         res.status(500).json({
             success: false,
             error: error.message
         });
     }
-};
+}
+
+export const getActiveCompositeFilterDescriptors = async (req, res) => {
+    try {
+        const filters = await compositeFilterDescriptorService.getActiveCompositeFilters();
+        res.status(200).json({
+            success: true,
+            data: filters
+        });
+    } catch (error) {
+        console.error('Error fetching active composite filter descriptors:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+}
 
 export default {
     getCompositeFilterDescriptors,
@@ -177,7 +184,7 @@ export default {
     getCompositeFilterDescriptorById,
     updateCompositeFilterDescriptor,
     deleteCompositeFilterDescriptor,
-    getActiveFilter,
-    setActiveFilter,
-    deactivateAllFilters
+    activateCompositeFilterDescriptor,
+    deactivateCompositeFilterDescriptor,
+    getActiveCompositeFilterDescriptors
 };

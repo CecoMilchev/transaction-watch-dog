@@ -43,17 +43,19 @@ router.delete('/filters/:id',
 // Active filter endpoints
 router.get(
     '/filters/active',
-    filterdescriptorController.getActiveFilter
+    filterdescriptorController.getActiveFiltersDescriptors
 );
 
 router.put(
     '/filters/:id/activate',
-    filterdescriptorController.setActiveFilter
+    validateRequestBodyMiddleware(),
+    filterdescriptorController.activateFilterDescriptor
 );
 
 router.put(
-    '/filters/deactivate',
-    filterdescriptorController.deactivateAllFilters
+    '/filters/:id/deactivate',
+    validateRequestBodyMiddleware(),
+    filterdescriptorController.deactivateFilterDescriptor
 );
 
 export default router;
