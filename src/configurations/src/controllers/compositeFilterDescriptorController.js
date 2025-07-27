@@ -1,6 +1,7 @@
 import CompositeFilterDescriptorService from '../services/compositeFilterDescriptorService.js';
-import kafkaProducerService from '../services/kafkaProducerService.js';
+import KafkaProducerService from '../services/kafkaProducerService.js';
 
+const kafkaProducerService = new KafkaProducerService();
 const compositeFilterDescriptorService = new CompositeFilterDescriptorService(kafkaProducerService);
 
 export const getCompositeFilterDescriptors = async (req, res) => {

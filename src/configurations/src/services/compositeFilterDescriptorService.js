@@ -70,9 +70,18 @@ class CompositeFilterDescriptorService {
             }
         }
 
-        await this.kafkaProducerService.publishFilterUpdate(compositeFilter);
+        // Fetch the complete composite filter with associated filters
+        const fullCompositeFilter = await CompositeFilter.findByPk(compositeFilter.id, {
+            include: [{
+                model: Filter,
+                as: 'filters',
+                through: { attributes: ['position'] }
+            }]
+        });
 
-        return compositeFilter;
+        await this.kafkaProducerService.publishFilterUpdate(fullCompositeFilter);
+
+        return fullCompositeFilter;
     }
 
     async updateCompositeFilterDescriptor(id, data) {
@@ -82,7 +91,15 @@ class CompositeFilterDescriptorService {
         }
 
         await CompositeFilter.update(data, { where: { id } });
-        const updatedFilter = await CompositeFilter.findByPk(id);
+        
+        // Fetch the complete composite filter with associated filters
+        const updatedFilter = await CompositeFilter.findByPk(id, {
+            include: [{
+                model: Filter,
+                as: 'filters',
+                through: { attributes: ['position'] }
+            }]
+        });
         
         await this.kafkaProducerService.publishFilterUpdate(updatedFilter);
         
@@ -96,8 +113,16 @@ class CompositeFilterDescriptorService {
         }
 
         await CompositeFilter.update({ is_active: true }, { where: { id } });
-        const updatedFilter = await CompositeFilter.findByPk(id);
         
+        // Fetch the complete composite filter with associated filters
+        const updatedFilter = await CompositeFilter.findByPk(id, {
+            include: [{
+                model: Filter,
+                as: 'filters',
+                through: { attributes: ['position'] }
+            }]
+        });
+        console.log("-----", updatedFilter.filters)
         await this.kafkaProducerService.publishFilterUpdate(updatedFilter);
         
         return updatedFilter;
@@ -110,7 +135,15 @@ class CompositeFilterDescriptorService {
         }
 
         await CompositeFilter.update({ is_active: false }, { where: { id } });
-        const updatedFilter = await CompositeFilter.findByPk(id);
+        
+        // Fetch the complete composite filter with associated filters
+        const updatedFilter = await CompositeFilter.findByPk(id, {
+            include: [{
+                model: Filter,
+                as: 'filters',
+                through: { attributes: ['position'] }
+            }]
+        });
         
         await this.kafkaProducerService.publishFilterUpdate(updatedFilter);
         

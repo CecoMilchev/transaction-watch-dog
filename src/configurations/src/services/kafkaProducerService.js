@@ -43,6 +43,7 @@ export class KafkaProducerService {
                     value: filter.value,
                     type: filter.type,
                     name: filter.name, // for composite filters
+                    filters: filter.filters, // for composite filters
                     logicalOperator: filter.logical_operator, // for composite filters
                     isActive: filter.is_active,
                     timestamp: new Date().toISOString(),
