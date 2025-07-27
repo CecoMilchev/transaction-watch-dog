@@ -12,8 +12,6 @@ const OPERATORS = {
 };
 
 export function applyFilter(obj, descriptor) {
-    console.log(descriptor);
-    // Handle composite filters with multiple conditions
     if (descriptor.filters && Array.isArray(descriptor.filters)) {
         const { logicalOperator, filters } = descriptor;
         const evals = filters.map(f => applyFilter(obj, f));
